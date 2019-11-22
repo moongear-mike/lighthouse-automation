@@ -25,7 +25,7 @@ if (cluster.isMaster) {
 
   // Workers can share any TCP connection
   // In this case it is an HTTP server
-  http.createServer(function (req, res) {
+  var lighthougeserver = http.createServer(function (req, res) {
 
     process.on('unhandledRejection', error => {
       res.writeHead(200, {'Content-Type': 'text/html'});
@@ -63,6 +63,8 @@ if (cluster.isMaster) {
         '61d8e0ed-6acf-4b0f-9219-c560e140d0c8',
         '5395f963-82e6-4105-82ef-fbf91788e8a4',
         '46c43b94-01d6-4f9e-9d18-dfa8bcf54ea4',
+        '92a78ee8-19a1-449e-abc8-ab4824bcc109',
+        'e1abcd6a-f083-4c6e-a765-9822776e2e72',
       ];
 
       if (!(api_keys.indexOf(url_vars['lh_api_key']) > -1)) {
@@ -209,7 +211,10 @@ if (cluster.isMaster) {
       return !!pattern.test(str);
     }
 
-  }).listen(3000);
+  });
+
+  lighthougeserver.listen(3000);
+  lighthougeserver.timeout = 30000;
 
 
   console.log(`Worker ${process.pid} started`);

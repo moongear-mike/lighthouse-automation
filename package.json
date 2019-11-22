@@ -1,14 +1,36 @@
 {
   "name": "lighthouse",
   "version": "1.0.0",
-  "description": "",
+  "description": "An API I created to automate Lighthouse testing.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Michael Love",
   "license": "ISC",
   "devDependencies": {
     "lighthouse": "^5.6.0"
-  }
+  },
+  "dependencies": {
+    "chrome-launcher": "^0.12.0",
+    "cluster": "^0.7.7",
+    "fs": "0.0.2",
+    "http": "0.0.0",
+    "os": "^0.1.1",
+    "ps-node": "^0.1.6",
+    "querystring": "^0.2.0",
+    "url": "^0.11.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moongear-mike/lighthouse-automation.git"
+  },
+  "keywords": [
+    "lighthouse",
+    "chrome"
+  ],
+  "bugs": {
+    "url": "https://github.com/moongear-mike/lighthouse-automation/issues"
+  },
+  "homepage": "https://github.com/moongear-mike/lighthouse-automation#readme"
 }
