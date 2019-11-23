@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Lighthouse testing for really awesome results - MoonGear.com</title>
-    <link href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAD/0lEQVR4Xu2aj7EMQRCHfy8CRIAIEAEiQASIABEgAkSACBABIkAEiAARUF+Zrpraur2Z7pnZd7e3U3X1ql7tznR/8+vu+bNnOvF2duL+awOwKeDECWwhcOIC2JLgFgJbCCxD4KakW+l3UdL1ybBfJf2W9Cn9Pi9jlobmAJx8JOmuJJz2NGC8l/RKEnCGtRE5AMdfpNk2w3+mmcUpnONnjvE8gPgBC6VczjxGFU9GgegNAMcfZ8Yzg28CxgPlQVKQdfdS0vMEr5siegG4IuldFttvJT2T9KPRUvqln/upH1TzMAB01oweAJitj0nCSB0Z945bxiB8CA3C53avMVoB5M5/S/GLgSMaOYJ8cK0nhBYAyPNLmnkkT8wu0cgphEQXJbQAwHkUwMxP6/poEIQYSuAv4RBWXRQAiempJGIe58MGBEkRDjhPTqDS5JXH1WUEAA4z+7QbvZKRy+r/D3exIwKAjM9iZcm4n+Nj+YDkSCi4mxcAie97GuXqTJ3/O2NF7Vie93N7QmqsNcp8MuL74s7jwC5W3vdZIbLnCCnSC+BXKnv7aJsD3r7n5Fvqz3IBifiSNwY8RhL3xD+ZH+lFDfbaWAJAfyy5qQjkAfJBdfMAsNJXklqNwRjY8zkLTTZL2FndPABYi9+RdC+ty1sV0BMA+w82Yx/SXmQIAFv5uWU2Y00tgBpnLDxZHJGfqptHAWZwqNzssKgngHxR5PHJdSTWavBceZuycTmQvRyyzzNYaIAdBpbk6bEp7ytkn2ewYwgB987UA8C2oIecBDlOJyFWNw+AYyiDQwEcw0KI43P2BtXNowCrtSw72Qm2LoRqjaxJbuxQWZ67S7QHAAaz4bhQGKjG4Frnea7Un60BSnuUnWN6AdjW8xC3w6GjMS+AQz4QmTug2as2LwA6s2pQ2hV6ZB591naBYVsiAJqPoaLeTt7L1/+h2ae/CADes5JIRSDznsexOJmf43H3GUAOMgqAPvLLCdcWtIMCbGvuXvhMx24BQCgAgbJILHJru0R7na7h/qTa36S+FgA4SxxyBgeE5muqAj3kzpmkXcN1Ga8VwBQCOYEjsxHX4xx5oTpmnnHO9W5wOlkYRnnEKBohQXLq8YEEd5B280zMc/5Hs6vyJiX0UEAOw6qD/Y+VIzXaqwhkzhV4fuk5zfb59wJhCL0B4Pj0sxb+hxKYMftIChnnH0mRQ/KPpPJ7h32f2zRDGAHAZh8nmEHki4OexsYGWCioFEZNEEYCyB1G0sSufRLHh5PW7KNI+1ASx0tOT2GGISwFwDP70WdDENYEAHBuCGsD4IawRgAuCGsFMIUwu2NcMwCDQCmevTJfO4BiRdkAFBGt/IFNASuf4KJ7J6+Af1+CBFDSbROOAAAAAElFTkSuQmCC" rel="icon" type="image/x-icon" />
+    <link href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAD/0lEQVR4Xu2aj7EMQRCHfy8CRIAIEAEiQASIABEgAkSACBABIkAEiAARUF+Zrpraur2Z7pnZd7e3U3X1ql7tznR/8+vu+bNnOvF2duL+awOwKeDECWwhcOIC2JLgFgJbCCxD4KakW+l3UdL1ybBfJf2W9Cn9Pi9jlobmAJx8JOmuJJz2NGC8l/RKEnCGtRE5AMdfpNk2w3+mmcUpnONnjvE8gPgBC6VczjxGFU9GgegNAMcfZ8Yzg28CxgPlQVKQdfdS0vMEr5siegG4IuldFttvJT2T9KPRUvqln/upH1TzMAB01oweAJitj0nCSB0Z945bxiB8CA3C53avMVoB5M5/S/GLgSMaOYJ8cK0nhBYAyPNLmnkkT8wu0cgphEQXJbQAwHkUwMxP6/poEIQYSuAv4RBWXRQAiempJGIe58MGBEkRDjhPTqDS5JXH1WUEAA4z+7QbvZKRy+r/D3exIwKAjM9iZcm4n+Nj+YDkSCi4mxcAie97GuXqTJ3/O2NF7Vie93N7QmqsNcp8MuL74s7jwC5W3vdZIbLnCCnSC+BXKnv7aJsD3r7n5Fvqz3IBifiSNwY8RhL3xD+ZH+lFDfbaWAJAfyy5qQjkAfJBdfMAsNJXklqNwRjY8zkLTTZL2FndPABYi9+RdC+ty1sV0BMA+w82Yx/SXmQIAFv5uWU2Y00tgBpnLDxZHJGfqptHAWZwqNzssKgngHxR5PHJdSTWavBceZuycTmQvRyyzzNYaIAdBpbk6bEp7ytkn2ewYwgB987UA8C2oIecBDlOJyFWNw+AYyiDQwEcw0KI43P2BtXNowCrtSw72Qm2LoRqjaxJbuxQWZ67S7QHAAaz4bhQGKjG4Frnea7Un60BSnuUnWN6AdjW8xC3w6GjMS+AQz4QmTug2as2LwA6s2pQ2hV6ZB591naBYVsiAJqPoaLeTt7L1/+h2ae/CADes5JIRSDznsexOJmf43H3GUAOMgqAPvLLCdcWtIMCbGvuXvhMx24BQCgAgbJILHJru0R7na7h/qTa36S+FgA4SxxyBgeE5muqAj3kzpmkXcN1Ga8VwBQCOYEjsxHX4xx5oTpmnnHO9W5wOlkYRnnEKBohQXLq8YEEd5B280zMc/5Hs6vyJiX0UEAOw6qD/Y+VIzXaqwhkzhV4fuk5zfb59wJhCL0B4Pj0sxb+hxKYMftIChnnH0mRQ/KPpPJ7h32f2zRDGAHAZh8nmEHki4OexsYGWCioFEZNEEYCyB1G0sSufRLHh5PW7KNI+1ASx0tOT2GGISwFwDP70WdDENYEAHBuCGsD4IawRgAuCGsFMIUwu2NcMwCDQCmevTJfO4BiRdkAFBGt/IFNASuf4KJ7J6+Af1+CBFDSbROOAAAAAElFTkSuQmCC"
+          rel="icon" type="image/x-icon"/>
     <style>
 
         html, body {
@@ -129,6 +130,20 @@
             display: none;
         }
 
+        .more-info {
+            z-index: 100000;
+            color: #000;
+            width: 100%;
+            text-align: center;
+            height: 100%;
+            position: fixed;
+            font-size: 24px;
+            display: none;
+            margin: 5px;
+        }
+
+        }
+
         /* Animation */
 
         @-webkit-keyframes spinner {
@@ -208,17 +223,46 @@
     <script>
 
         var $lh = jQuery.noConflict();
+        var refreshcount = 0;
+        var readyalert = window.setTimeout(function () {
+            $lh('.more-info div').html('');
+        }, 1000);
 
         $lh('.loading').removeClass('hidden');
 
-        $lh(window, 'iframe').resize(function() {
+        $lh(window, 'iframe').resize(function () {
             fixiframe()
         });
 
         function iframe_loaded() {
-            $lh('.loading').addClass('hidden');
 
-            $lh('html *', $lh('iframe').contents()).on('click', (function() {
+            var chromeisbusy = jQuery("#lh_iframe").contents().find('#server-busy').data('status');
+
+            if (chromeisbusy > 0) {
+                // Do something for busy
+                $lh('.more-info').show();
+
+                retryrun = setTimeout(function () {
+                    $lh('#lh_form form').submit();
+                    clearTimeout(readyalert);
+                    readyalert = window.setTimeout(function () {
+                        $lh('.more-info span').html('0');
+                        $lh('.more-info div').html('Here it comes...');
+                    }, 2000);
+                    refreshcount++;
+                    // console.log(refreshcount);
+                    $lh('.more-info span').html(chromeisbusy);
+                    $lh('.more-info div').append('. ');
+                }, 200);
+            } else {
+                $lh('.more-info').hide();
+                $lh('.more-info span').html('0');
+                $lh('.more-info div').html('');
+                $lh('.loading').addClass('hidden');
+                refreshcount = 0;
+            }
+
+            $lh('html *', $lh('iframe').contents()).on('click', (function () {
                 fixiframe()
             }));
 
@@ -226,22 +270,22 @@
         }
 
         function fixiframe() {
-            setTimeout(function (){
+            setTimeout(function () {
                 $lh('iframe').attr('height', $lh('html', $lh('iframe').contents()).height());
-                console.log($lh('html', $lh('iframe').contents()).height());
+                // console.log($lh('html', $lh('iframe').contents()).height());
             }, 200);
         }
 
         $lh(document).ready(function () {
-
             $lh('.loading').addClass('hidden');
 
-            $lh('#lh_website').blur(function() {
+            $lh('#lh_website').blur(function () {
                 fix_protocol();
             });
 
             $lh('#lh_form form').submit(function (e) {
 
+                $lh("#lh_iframe").attr('src', 'about:blank');
 
                 fix_protocol();
 
@@ -256,11 +300,11 @@
                 var d = new Date();
                 var n = d.getTime();
 
-                $lh(this).attr('action', '/'+  n + '/');
+                $lh(this).attr('action', '/' + n + '/');
 
-                var lh_iframe_src = lh_domain + '/'+  n + '/?lh_schema=' + lh_schema + '&lh_website=' + lh_website + '&lh_form_factor=' + lh_form_factor + '&lh_time=' + n;
+                var lh_iframe_src = lh_domain + '/' + n + '/?lh_schema=' + lh_schema + '&lh_website=' + lh_website + '&lh_form_factor=' + lh_form_factor + '&lh_time=' + n;
 
-                console.log(lh_iframe_src);
+                // console.log(lh_iframe_src);
 
                 $lh('.loading').removeClass('hidden');
 
@@ -287,8 +331,7 @@
                     if ((website_protocol[1] === 'http://' || website_protocol[1] === 'https://')) {
                         $lh('#lh_schema').val(website_protocol[1]);
                     }
-                }
-                catch (e) {
+                } catch (e) {
                     // I don't care
                 }
 
@@ -298,14 +341,13 @@
         });
 
 
-
     </script>
 
 </head>
 <body>
 <div class="loading"></div>
 <div id="lh_form">
-    <form method="post" action="/" target="lh_iframe">
+    <form method="post" action="/" target="lh_iframe" onsubmit="">
 
         <div class="lh_section">
             <div class="lh_option_title">Website URL:</div>
@@ -375,6 +417,9 @@
             <div><input type="submit" value="Run Lighthouse Test"></div>
         </div>
     </form>
+</div>
+<div class="more-info">Server is busy. Waiting for <span>?</span> processes.
+    <div></div>
 </div>
 
 <div class="iframe-container">

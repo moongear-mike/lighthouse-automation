@@ -90,11 +90,9 @@ app.post('/[0-9]+', (req, res) => {
 
         console.log('Chrome processes: ' + chromeisbusy);
 
-        let currentstatus = chromeisbusy ? 'busy' : 'ready';
-
         if (chromeisbusy) {
             res.writeHead(200, {'Content-Type': 'text/html'});
-            res.write('Server Status: ' + currentstatus + '<br>Try again in a few moments...');
+            res.write('<div id="server-busy" data-status="'+chromeisbusy+'"></div>');
             res.write('<script>parent.iframe_loaded();</script>');
             res.end();
             console.log('Stopped.');
