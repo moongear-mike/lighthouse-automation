@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lighthouse testing - MoonGear.com</title>
+    <title>Lighthouse testing for really awesome results - MoonGear.com</title>
     <link href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAD/0lEQVR4Xu2aj7EMQRCHfy8CRIAIEAEiQASIABEgAkSACBABIkAEiAARUF+Zrpraur2Z7pnZd7e3U3X1ql7tznR/8+vu+bNnOvF2duL+awOwKeDECWwhcOIC2JLgFgJbCCxD4KakW+l3UdL1ybBfJf2W9Cn9Pi9jlobmAJx8JOmuJJz2NGC8l/RKEnCGtRE5AMdfpNk2w3+mmcUpnONnjvE8gPgBC6VczjxGFU9GgegNAMcfZ8Yzg28CxgPlQVKQdfdS0vMEr5siegG4IuldFttvJT2T9KPRUvqln/upH1TzMAB01oweAJitj0nCSB0Z945bxiB8CA3C53avMVoB5M5/S/GLgSMaOYJ8cK0nhBYAyPNLmnkkT8wu0cgphEQXJbQAwHkUwMxP6/poEIQYSuAv4RBWXRQAiempJGIe58MGBEkRDjhPTqDS5JXH1WUEAA4z+7QbvZKRy+r/D3exIwKAjM9iZcm4n+Nj+YDkSCi4mxcAie97GuXqTJ3/O2NF7Vie93N7QmqsNcp8MuL74s7jwC5W3vdZIbLnCCnSC+BXKnv7aJsD3r7n5Fvqz3IBifiSNwY8RhL3xD+ZH+lFDfbaWAJAfyy5qQjkAfJBdfMAsNJXklqNwRjY8zkLTTZL2FndPABYi9+RdC+ty1sV0BMA+w82Yx/SXmQIAFv5uWU2Y00tgBpnLDxZHJGfqptHAWZwqNzssKgngHxR5PHJdSTWavBceZuycTmQvRyyzzNYaIAdBpbk6bEp7ytkn2ewYwgB987UA8C2oIecBDlOJyFWNw+AYyiDQwEcw0KI43P2BtXNowCrtSw72Qm2LoRqjaxJbuxQWZ67S7QHAAaz4bhQGKjG4Frnea7Un60BSnuUnWN6AdjW8xC3w6GjMS+AQz4QmTug2as2LwA6s2pQ2hV6ZB591naBYVsiAJqPoaLeTt7L1/+h2ae/CADes5JIRSDznsexOJmf43H3GUAOMgqAPvLLCdcWtIMCbGvuXvhMx24BQCgAgbJILHJru0R7na7h/qTa36S+FgA4SxxyBgeE5muqAj3kzpmkXcN1Ga8VwBQCOYEjsxHX4xx5oTpmnnHO9W5wOlkYRnnEKBohQXLq8YEEd5B280zMc/5Hs6vyJiX0UEAOw6qD/Y+VIzXaqwhkzhV4fuk5zfb59wJhCL0B4Pj0sxb+hxKYMftIChnnH0mRQ/KPpPJ7h32f2zRDGAHAZh8nmEHki4OexsYGWCioFEZNEEYCyB1G0sSufRLHh5PW7KNI+1ASx0tOT2GGISwFwDP70WdDENYEAHBuCGsD4IawRgAuCGsFMIUwu2NcMwCDQCmevTJfO4BiRdkAFBGt/IFNASuf4KJ7J6+Af1+CBFDSbROOAAAAAElFTkSuQmCC" rel="icon" type="image/x-icon" />
     <style>
 
@@ -253,7 +253,14 @@
 
                 var lh_domain = location.protocol + "//" + location.host;
 
-                var lh_iframe_src = lh_domain + '?lh_schema=' + lh_schema + '&lh_website=' + lh_website + '&lh_form_factor=' + lh_form_factor + '';
+                var d = new Date();
+                var n = d.getTime();
+
+                $lh(this).attr('action', '/'+  n + '/');
+
+                var lh_iframe_src = lh_domain + '/'+  n + '/?lh_schema=' + lh_schema + '&lh_website=' + lh_website + '&lh_form_factor=' + lh_form_factor + '&lh_time=' + n;
+
+                console.log(lh_iframe_src);
 
                 $lh('.loading').removeClass('hidden');
 
@@ -262,7 +269,6 @@
                 return true;
 
             });
-
 
             var vars = [], hash;
             var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -299,7 +305,7 @@
 <body>
 <div class="loading"></div>
 <div id="lh_form">
-    <form method="get" action="app.js" target="lh_iframe">
+    <form method="post" action="/" target="lh_iframe">
 
         <div class="lh_section">
             <div class="lh_option_title">Website URL:</div>

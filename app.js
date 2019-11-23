@@ -1,63 +1,106 @@
-const http = require('http');
 const fs = require("fs");
-const querystring = require('querystring');
 const url = require('url');
-const cluster = require('cluster');
-const numCPUs = require('os').cpus().length;
 const lighthouse = require('lighthouse');
 const chromeLauncher = require('chrome-launcher');
+const request = require('request');
+const puppeteer = require('puppeteer');
+const util = require('util');
+const ps = require('ps-node');
+const express = require('express');
+const app = express();
+
+const port = 3000;
+
+app.get('/', function (req, res) {
+  res.send('<b>My</b> first express http server');
+});
+
+app.listen(port, function (req, res) {
 
 
-if (cluster.isMaster) {
+  var writeChunk = '';
+  var doWrite = true;
+  var stopProcess = '';
+  var chromeisbusy = 0;
 
-  console.log(`Master ${process.pid} is running`);
 
-  // Fork workers.
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork();
-  }
-
-  cluster.on('exit', (worker, code, signal) => {
-    console.log(`worker ${worker.process.pid} died`);
+  ps.lookup({
+    command: '(\w*chrom\w*)',
+    arguments: '',
+  }, function (err, resultList) {
+    if (err) {
+      throw new Error(err);
+    }
+    if (resultList.length) {
+      console.log('Chrome is busy.');
+    }
+    var haschrome = setchromebusy(resultList.length);
   });
 
-} else {
+  function setchromebusy(chromevar) {
+    chromeisbusy = chromevar;
 
-  // Workers can share any TCP connection
-  // In this case it is an HTTP server
-  var lighthougeserver = http.createServer(function (req, res) {
+    console.log();
 
-    process.on('unhandledRejection', error => {
+    var url_vars = getJsonFromUrl(req.protocol) || [];
+
+
+    console.log('Chrome processes: ' + chromeisbusy);
+
+    if (chromeisbusy) {
+      console.log('I should stop this.....');
+      let url_vars = [];
+    }
+
+
+    if (chromeisbusy > 0 && url_vars.length) {
       res.writeHead(200, {'Content-Type': 'text/html'});
-      res.write(error.name + ': ');
-      res.write(error.code + '\n');
-      res.write(error.friendlyMessage);
+      res.write('Busy at the moment.  Try back soon.');
       res.write('<script>parent.iframe_loaded();</script>');
       res.end();
-      console.log('unhandledRejection', error.message);
-    });
-
-
-    let url_vars = getJsonFromUrl(req.url);
-
-    if (req.url == '/favicon.ico') {
-
+      console.log('Wrote index chunk.');
       return false;
 
-    } else if (req.url == '/' || req.url == '' || (!url_vars['lh_website'] && !url_vars['lh_schema'])) {
+    } else if (req.url === '/favicon.ico') {
+      doWrite = false;
+    } else if (req.url === '/' || req.url === '' || (!url_vars['lh_website'] && !url_vars['lh_schema'])) {
 
       fs.readFile("index.html", "utf8", function (err, contents) {
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.write(contents);
         res.end();
+        console.log('Wrote index chunk.');
       });
 
     } else {
 
-      var api_keys = new Array();
+
+      // Do checks and balances
+      // Do checks and balances
+      // Do checks and balances
+      // Do checks and balances
+      // Do checks and balances
+      // Do checks and balances
+
+      var api_keys = [];
+      var ip_addresses = [];
+
+      // Get the IP address of the requesting party
+      var ip = req.headers['x-real-ip'] ||
+          req.headers['x-forwarded-for'] ||
+          req.connection.remoteAddress ||
+          req.socket.remoteAddress ||
+          (req.connection.socket ? req.connection.socket.remoteAddress : null);
+
+      // Whitelisted ip addresses
+      ip_addresses = [
+        '75.188.73.180',
+        '127.0.0.1',
+        '99.203.186.205',
+      ];
 
       api_keys = [
-        '6c996bed-8152-4518-98f6-b763c522beb8',  // World facing test mode
+        '6c996bed-8152-4518-98f6-b763c522beb8',  // <<< World facing test mode
         'fe1eb3d5-1fde-4836-9d56-cf5c3ad5315b',
         '89d833dc-98b5-46de-8e13-e3a8aa57bb22',
         '61d8e0ed-6acf-4b0f-9219-c560e140d0c8',
@@ -67,156 +110,178 @@ if (cluster.isMaster) {
         'e1abcd6a-f083-4c6e-a765-9822776e2e72',
       ];
 
-      if (!(api_keys.indexOf(url_vars['lh_api_key']) > -1)) {
+      // Was an API key provided or is the request from a whitelisted ip address?
+      if (!(api_keys.indexOf(url_vars['lh_api_key']) > -1) && !(ip_addresses.indexOf(ip) > -1)) {
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.write('Um, bad API key?  Sorry.');
         res.write('<script>parent.iframe_loaded();</script>');
         res.end();
-        return false;
-      }
+        console.log('Killed. No API key ot whitelist IP.');
+      } else {
 
+        console.log(ip);
+        console.log(url_vars);
 
-      console.log(url_vars);
+        // Setup lighthouse
+        // Setup lighthouse
+        // Setup lighthouse
+        // Setup lighthouse
+        // Setup lighthouse
+        const opts =
+            {
+              chromeFlags: [
+                '--headless'
+              ],
+              "output": [
+                "html"
+              ],
+              // logLevel: 'info',
+              "save-assets": true,
+              "maxWaitForLoad": 45000,
+              "throttlingMethod": url_vars['lh_throttle_method'],
+              "throttling": {
+                "rttMs": 150,
+                "throughputKbps": 1638.4,
+                "requestLatencyMs": 15,
+                "downloadThroughputKbps": 1474.5600000000002,
+                "uploadThroughputKbps": 675,
+                "cpuSlowdownMultiplier": 1
+              },
+              "gatherMode": false,
+              "disableStorageReset": false,
+              "emulatedFormFactor": url_vars['lh_form_factor'],
+              "blockedUrlPatterns": null,
+              "additionalTraceCategories": null,
+              "extraHeaders": null,
+              "onlyAudits": null,
+              "onlyCategories": [
+                url_vars['lh_categories_accessibility'],
+                url_vars['lh_categories_best_practices'],
+                url_vars['lh_categories_performance'],
+                url_vars['lh_categories_seo'],
+                url_vars['lh_categories_pwa']
+              ],
+              "skipAudits": null
+            };
 
-      const opts =
+        const url = url_vars['lh_schema'] + url_vars['lh_website'];
 
-          {
-            chromeFlags: [
-              '--headless'
-            ],
-            "output": [
-              "html"
-            ],
-            "output-path": "./reports/report.html",
-            "save-assets": true,
-            "maxWaitForLoad": 45000,
-            "throttlingMethod": url_vars['lh_throttle_method'],
-            "throttling": {
-              "rttMs": 150,
-              "throughputKbps": 1638.4,
-              "requestLatencyMs": 15,
-              "downloadThroughputKbps": 1474.5600000000002,
-              "uploadThroughputKbps": 675,
-              "cpuSlowdownMultiplier": 1
-            },
-            "gatherMode": false,
-            "disableStorageReset": false,
-            "emulatedFormFactor": url_vars['lh_form_factor'],
-            "blockedUrlPatterns": null,
-            "additionalTraceCategories": null,
-            "extraHeaders": null,
-            "onlyAudits": null,
-            "onlyCategories": [
-              url_vars['lh_categories_accessibility'],
-              url_vars['lh_categories_best_practices'],
-              url_vars['lh_categories_performance'],
-              url_vars['lh_categories_seo'],
-              url_vars['lh_categories_pwa']
-            ],
-            "skipAudits": null
-          };
-
-      const url = url_vars['lh_schema'] + url_vars['lh_website'];
-
-      if (!validURL(url)) {
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write('Ooops!  Go back and check the Website field.  ');
-        res.write('<script>parent.iframe_loaded();</script>');
-        res.end();
-        return;
-      }
-
-      console.log('Testing ' + url);
-
-      var html_out = launchChromeAndRunLighthouse(url, opts).then(function (value) {
-
-        try {
+        if (!validURL(url)) {
           res.writeHead(200, {'Content-Type': 'text/html'});
-          res.write(value[0]);
+          res.write('Ooops!  Go back and check the Website field.');
           res.write('<script>parent.iframe_loaded();</script>');
+          res.end();
+          console.log('Wrote chunk.');
+        } else {
 
-          fs.writeFile("lh-result-" + url_vars['lh_website'] + new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '').replace(' ', '_') + ".html", value[0], function(err) {
-            if(err) {
-              return console.log(err);
+          console.log('Now testing ' + url);
+
+          launchChromeAndRunLighthouse(url, opts).then(results => {
+
+            try {
+              html_out = results[0];
+              writeChunk = html_out;
+
+            } catch (error) {
+              console.log(error);
+              writeChunk = 'Error';
             }
-            console.log("The file was saved!");
+
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write(writeChunk);
+            res.write('<script>parent.iframe_loaded();</script>');
+            res.end();
+            console.log('Wrote chunk.');
+
+            return true;
           });
-
-
-          res.end();
-        } catch (error) {
-          res.writeHead(200, {'Content-Type': 'text/html'});
-          console.log(error);
-          res.write('Error');
-          res.write('<script>parent.iframe_loaded();</script>');
-          res.end();
         }
-        return value;
-      });
 
+      }
     }
+  }
 
-    // The Functions
-    // The Functions
-    // The Functions
-    // The Functions
-    // The Functions
+  // Handle Error
+  // Handle Error
+  // Handle Error
+  // Handle Error
+  // Handle Error
+  // Handle Error
 
-
-    async function launchChromeAndRunLighthouse(url, opts, config = null) {
-      return chromeLauncher.launch({chromeFlags: opts.chromeFlags}).then(chrome => {
-        opts.port = chrome.port;
-        return lighthouse(url, opts, config).then(results => {
-          return chrome.kill().then(() => results.report)
-        });
-      });
-    }
-
-    function getJsonFromUrl(url) {
-      if (!url) url = location.href;
-      var question = url.indexOf("?");
-      var hash = url.indexOf("#");
-      if (hash == -1 && question == -1) return {};
-      if (hash == -1) hash = url.length;
-      var query = question == -1 || hash == question + 1 ? url.substring(hash) :
-          url.substring(question + 1, hash);
-      var result = {};
-      query.split("&").forEach(function (part) {
-        if (!part) return;
-        part = part.split("+").join(" "); // replace every + with space, regexp-free version
-        var eq = part.indexOf("=");
-        var key = eq > -1 ? part.substr(0, eq) : part;
-        var val = eq > -1 ? decodeURIComponent(part.substr(eq + 1)) : "";
-        var from = key.indexOf("[");
-        if (from == -1) result[decodeURIComponent(key)] = val;
-        else {
-          var to = key.indexOf("]", from);
-          var index = decodeURIComponent(key.substring(from + 1, to));
-          key = decodeURIComponent(key.substring(0, from));
-          if (!result[key]) result[key] = [];
-          if (!index) result[key].push(val);
-          else result[key][index] = val;
-        }
-      });
-      return result;
-    }
-
-    function validURL(str) {
-      var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-          '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-          '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-          '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-          '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-          '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-      return !!pattern.test(str);
-    }
-
+  process.on('unhandledRejection', error => {
+    writeChunk = writeChunk + error.name + ': ';
+    writeChunk = writeChunk + error.code + '\n';
+    writeChunk = writeChunk + error.friendlyMessage;
+    // res.write(writeChunk);
+    // res.write('<script>parent.iframe_loaded();</script>');
+    // res.end();
+    console.log('unhandledRejection', error.message);
   });
 
-  lighthougeserver.listen(3000);
-  lighthougeserver.timeout = 30000;
 
+  // The Functions
+  // The Functions
+  // The Functions
+  // The Functions
+  // The Functions
 
-  console.log(`Worker ${process.pid} started`);
+  async function launchChromeAndRunLighthouse(url, opts, config = null) {
 
-}
+    // Launch chrome using chrome-launcher.
+    const chrome = await chromeLauncher.launch(opts);
+    opts.port = chrome.port;
+
+    // Connect to it using puppeteer.connect().
+    const resp = await util.promisify(request)(`http://localhost:${opts.port}/json/version`);
+    const {webSocketDebuggerUrl} = JSON.parse(resp.body);
+    const browser = await puppeteer.connect({browserWSEndpoint: webSocketDebuggerUrl});
+
+    // Run Lighthouse.
+    const {report} = await lighthouse(url, opts, null);  // await
+
+    await browser.disconnect();
+    await chrome.kill();
+
+    return report;
+  }
+
+  function getJsonFromUrl(url) {
+    if (!url) url = location.href;
+    var question = url.indexOf("?");
+    var hash = url.indexOf("#");
+    if (hash === -1 && question === -1) return {};
+    if (hash === -1) hash = url.length;
+    var query = question === -1 || hash === question + 1 ? url.substring(hash) :
+        url.substring(question + 1, hash);
+    var result = {};
+    query.split("&").forEach(function (part) {
+      if (!part) return;
+      part = part.split("+").join(" "); // replace every + with space, regexp-free version
+      var eq = part.indexOf("=");
+      var key = eq > -1 ? part.substr(0, eq) : part;
+      var val = eq > -1 ? decodeURIComponent(part.substr(eq + 1)) : "";
+      var from = key.indexOf("[");
+      if (from === -1) result[decodeURIComponent(key)] = val;
+      else {
+        var to = key.indexOf("]", from);
+        var index = decodeURIComponent(key.substring(from + 1, to));
+        key = decodeURIComponent(key.substring(0, from));
+        if (!result[key]) result[key] = [];
+        if (!index) result[key].push(val);
+        else result[key][index] = val;
+      }
+    });
+    return result;
+  }
+
+  function validURL(str) {
+    var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+    return !!pattern.test(str);
+  }
+
+});
