@@ -92,7 +92,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.3);
+            background-color: rgba(255, 255, 255, 0.8);
         }
 
         .loading.hidden:before {
@@ -137,7 +137,8 @@
             text-align: center;
             height: 100%;
             position: fixed;
-            font-size: 24px;
+            font-size: 18px;
+            font-weight: 600;
             display: none;
             margin: 5px;
         }
@@ -222,11 +223,19 @@
             crossorigin="anonymous"></script>
     <script>
 
+        var chromeisbusy;
         var $lh = jQuery.noConflict();
         var refreshcount = 0;
         var readyalert = window.setTimeout(function () {
             $lh('.more-info div').html('');
         }, 1000);
+
+        var failsafe = window.setTimeout(function () {
+            $lh('.more-info span').html('?');
+            $lh('.more-info div').html('Server is taking too long.');
+            $lh('.loading').addClass('hidden');
+            refreshcount = 0;
+        }, 10000);
 
         $lh('.loading').removeClass('hidden');
 
@@ -238,16 +247,25 @@
 
             var chromeisbusy = jQuery("#lh_iframe").contents().find('#server-busy').data('status');
 
-            if (chromeisbusy > 0) {
+            if (chromeisbusy > 20) {
+                $lh('.more-info span').html('?');
+                $lh('.more-info div').html('Server is taking too long.');
+                $lh('.loading').addClass('hidden');
+                refreshcount = 0;
+                clearTimeout(readyalert);
+                clearTimeout(failsafe);
+            }
+            else if (chromeisbusy > 0) {
                 // Do something for busy
                 $lh('.more-info').show();
 
                 retryrun = setTimeout(function () {
                     $lh('#lh_form form').submit();
+                    clearTimeout(failsafe);
                     clearTimeout(readyalert);
                     readyalert = window.setTimeout(function () {
                         $lh('.more-info span').html('0');
-                        $lh('.more-info div').html('Here it comes...');
+                        $lh('.more-info div').html('Almost done! Getting your results now...');
                     }, 2000);
                     refreshcount++;
                     // console.log(refreshcount);
@@ -255,6 +273,7 @@
                     $lh('.more-info div').append('. ');
                 }, 200);
             } else {
+                clearTimeout(failsafe);
                 $lh('.more-info').hide();
                 $lh('.more-info span').html('0');
                 $lh('.more-info div').html('');
@@ -374,22 +393,22 @@
         <div class="lh_section">
             <div class="lh_categories">Categories:</div>
             <label for="lh_categories_performance">
-                <input id="lh_categories_performance" name="lh_categories_performance" type="checkbox" checked
+                <input id="lh_categories_performance" name="lh_categories[]" type="checkbox" checked
                        value="performance"> Performance
             </label>
             <label for="lh_categories_accessibility">
-                <input id="lh_categories_accessibility" name="lh_categories_accessibility" type="checkbox" checked
+                <input id="lh_categories_accessibility" name="lh_categories[]" type="checkbox" checked
                        value="accessibility"> Accessibility
             </label>
             <label for="lh_categories_best-practices">
-                <input id="lh_categories_best-practices" name="lh_categories_best_practices" type="checkbox" checked
+                <input id="lh_categories_best-practices" name="lh_categories[]" type="checkbox" checked
                        value="best-practices"> Best-Practices
             </label>
             <label for="lh_categories_seo">
-                <input id="lh_categories_seo" name="lh_categories_seo" type="checkbox" checked value="seo"> SEO
+                <input id="lh_categories_seo" name="lh_categories[]" type="checkbox" checked value="seo"> SEO
             </label>
             <label for="lh_categories_pwa">
-                <input id="lh_categories_pwa" name="lh_categories_pwa" type="checkbox" value="pwa"> PWA
+                <input id="lh_categories_pwa" name="lh_categories[]" type="checkbox" value="pwa"> PWA
             </label>
         </div>
 
@@ -418,7 +437,7 @@
         </div>
     </form>
 </div>
-<div class="more-info">Server is busy. Waiting for <span>?</span> processes.
+<div class="more-info">Server is busy working on <span>?</span> other processes.
     <div></div>
 </div>
 

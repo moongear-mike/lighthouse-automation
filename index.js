@@ -51,7 +51,9 @@ ps.lookup({
 });
 
 
-app.use(express.urlencoded());
+// app.use(express.urlencoded());
+
+app.use(express.urlencoded({extended: true}));
 
 // This index page
 app.get('/', (req, res) => {
@@ -71,6 +73,13 @@ app.post('/[0-9]+', (req, res) => {
     var stopProcess = '';
     var chromeisbusy = 0;
     var post_vars = req.body;
+
+    post_vars = typeof post_vars === 'undefined' ? [] : post_vars;
+
+    if (typeof post_vars['lh_api_res_type'] === 'undefined') {
+        api_res_type = 'html';
+    }
+
 
     ps.lookup({
         command: '(\w*chrom\w*)',
@@ -92,7 +101,7 @@ app.post('/[0-9]+', (req, res) => {
 
         if (chromeisbusy) {
             res.writeHead(200, {'Content-Type': 'text/html'});
-            res.write('<div id="server-busy" data-status="'+chromeisbusy+'"></div>');
+            res.write('<div id="server-busy" data-status="' + chromeisbusy + '"></div>');
             res.write('<script>parent.iframe_loaded();</script>');
             res.end();
             console.log('Stopped.');
@@ -120,53 +129,125 @@ app.post('/[0-9]+', (req, res) => {
                 console.log(ip);
                 console.log(post_vars);
 
-                // Setup lighthouse
-                // Setup lighthouse
-                // Setup lighthouse
-                // Setup lighthouse
-                // Setup lighthouse
+                // Validate lighthouse options
+                // Validate lighthouse options
+                // Validate lighthouse options
+                // Validate lighthouse options
+                // Validate lighthouse options
+                // Validate lighthouse options
+
+                // Check lh_throttle_method: if defined then if allowed value
+                // Check lh_throttle_method: if defined then if allowed value
+                // Check lh_throttle_method: if defined then if allowed value
+                if (typeof post_vars['lh_throttle_method'] === 'undefined') {
+                    lh_throttle_method = 'provided';
+                } else {
+                    lh_throttle_method = ["devtools", "provided", "simulate"].indexOf(post_vars['lh_throttle_method']) ? post_vars['lh_throttle_method'] : 'provided';
+                }
+
+                // Check lh_form_factor: if defined then if allowed value
+                // Check lh_form_factor: if defined then if allowed value
+                // Check lh_form_factor: if defined then if allowed value
+                if (typeof post_vars['lh_form_factor'] === 'undefined') {
+                    lh_form_factor = "mobile";
+                } else {
+                    lh_form_factor = ["mobile", "desktop", "none"].indexOf(post_vars['lh_form_factor']) ? post_vars['lh_form_factor'] : 'mobile';
+                }
+
+                // Check lh_categories: if defined then if allowed values
+                // Check lh_categories: if defined then if allowed values
+                // Check lh_categories: if defined then if allowed values
+                if (typeof post_vars['lh_categories'] === 'undefined') {
+                    lh_categories = ['performance', 'accessibility', 'best-practices', 'seo', 'pwa'];
+                } else if (!post_vars['lh_categories'].length) {
+                    lh_categories = ['performance', 'accessibility', 'best-practices', 'seo', 'pwa'];
+                } else {
+                    lh_categories = [];
+                    post_vars['lh_categories'].forEach(function (category) {
+                        if (Array(['performance', 'accessibility', 'best-practices', 'seo', 'pwa']).indexOf(category)) {
+                            lh_categories.push(category);
+                        }
+                        lh_categories = lh_categories.length ? lh_categories : ['performance', 'accessibility', 'best-practices', 'seo', 'pwa'];
+                    });
+                }
+
+                // Check lh_option_output: if defined then if allowed values
+                // Check lh_option_output: if defined then if allowed values
+                // Check lh_option_output: if defined then if allowed values
+                if (typeof post_vars['lh_option_output'] === 'undefined') {
+                    lh_option_output = ["html"];
+                } else if (!post_vars['lh_option_output'].length) {
+                    lh_option_output = ["html"];
+                } else {
+                    lh_option_output = [];
+                    post_vars['lh_option_output'].forEach(function (output_type) {
+                        if (Array(["json", "html", "csv"]).indexOf(output_type)) {
+                            lh_option_output.push(output_type);
+                        }
+                        lh_option_output = lh_option_output.length ? lh_option_output : ["html"];
+                    });
+                }
+
+                // Other options= defaults
+                // Other options= defaults
+                // Other options= defaults
+                let lh_option_save_assets = false;
+                let lh_option_logLevel = 'quiet';   // verbose, quiet
+                let lh_option_maxWaitForLoad = 45000;
+                let lh_option_rttMs = 150;
+                // Throttling
+                let lh_option_throughputKbps = 1638.4;
+                let lh_option_requestLatencyMs = 15;
+                let lh_option_downloadThroughputKbps = 1474.5600000000002;
+                let lh_option_uploadThroughputKbps = 675;
+                let lh_option_cpuSlowdownMultiplier = 1;
+                // More...
+                let lh_option_gatherMode = false;
+                let lh_option_disableStorageReset = false;
+                let lh_option_emulatedFormFactor = lh_form_factor;
+                let lh_option_blockedUrlPatterns = null;
+                let lh_option_additionalTraceCategories = null;
+                let lh_option_extraHeaders = null;
+                let lh_option_onlyAudits = null;
+                let lh_option_skipAudits = null;
+
+
+                // Create option object
+                // Create option object
                 const opts =
                     {
                         chromeFlags: [
                             '--headless'
                         ],
-                        "output": [
-                            "html"
-                        ],
-                        // logLevel: 'info',
+                        "output": lh_option_output,
+                        logLevel: lh_option_logLevel,
                         "save-assets": true,
-                        "maxWaitForLoad": 45000,
-                        "throttlingMethod": post_vars['lh_throttle_method'],
+                        "maxWaitForLoad": lh_option_maxWaitForLoad,
+                        "throttlingMethod": lh_throttle_method,
                         "throttling": {
-                            "rttMs": 150,
-                            "throughputKbps": 1638.4,
-                            "requestLatencyMs": 15,
-                            "downloadThroughputKbps": 1474.5600000000002,
-                            "uploadThroughputKbps": 675,
-                            "cpuSlowdownMultiplier": 1
+                            "rttMs": lh_option_rttMs,
+                            "throughputKbps": lh_option_throughputKbps,
+                            "requestLatencyMs": lh_option_requestLatencyMs,
+                            "downloadThroughputKbps": lh_option_downloadThroughputKbps,
+                            "uploadThroughputKbps": lh_option_uploadThroughputKbps,
+                            "cpuSlowdownMultiplier": lh_option_cpuSlowdownMultiplier
                         },
-                        "gatherMode": false,
-                        "disableStorageReset": false,
-                        "emulatedFormFactor": post_vars['lh_form_factor'],
-                        "blockedUrlPatterns": null,
-                        "additionalTraceCategories": null,
-                        "extraHeaders": null,
-                        "onlyAudits": null,
-                        "onlyCategories": [
-                            post_vars['lh_categories_accessibility'],
-                            post_vars['lh_categories_best_practices'],
-                            post_vars['lh_categories_performance'],
-                            post_vars['lh_categories_seo'],
-                            post_vars['lh_categories_pwa']
-                        ],
-                        "skipAudits": null
+                        "gatherMode": lh_option_gatherMode,
+                        "disableStorageReset": lh_option_disableStorageReset,
+                        "emulatedFormFactor": lh_form_factor,
+                        "blockedUrlPatterns": lh_option_blockedUrlPatterns,
+                        "additionalTraceCategories": lh_option_additionalTraceCategories,
+                        "extraHeaders": lh_option_extraHeaders,
+                        "onlyAudits": lh_option_onlyAudits,
+                        "onlyCategories": lh_categories,
+                        "skipAudits": lh_option_skipAudits
                     };
 
                 const url = post_vars['lh_schema'] + post_vars['lh_website'];
 
                 if (!validURL(url)) {
                     res.writeHead(200, {'Content-Type': 'text/html'});
-                    res.write('Ooops!  Go back and check the Website field.');
+                    res.write('The domain name does not apprea to be valid.');
                     res.write('<script>parent.iframe_loaded();</script>');
                     res.end();
                     console.log('Wrote chunk.');
@@ -213,6 +294,26 @@ app.post('/[0-9]+', (req, res) => {
         // res.write(writeChunk);
         // res.write('<script>parent.iframe_loaded();</script>');
         // res.end();
+        ps.lookup({
+            command: '(\w*chrom\w*)',
+            arguments: '',
+        }, function (err, resultList) {
+            if (err) {
+                throw new Error(err);
+            }
+            resultList.forEach(function (process) {
+                if (process) {
+                    ps.kill(process.pid, function (err) {
+                        if (err) {
+                            throw new Error(err);
+                        } else {
+                            console.log('Process %s has been killed!', pid);
+                        }
+                    });
+                }
+            });
+        });
+
         console.log('unhandledRejection', error.message);
     });
 
@@ -254,6 +355,12 @@ app.post('/[0-9]+', (req, res) => {
     }
 
 });
+
+// Change the 404 message modifing the middleware
+app.use(function (req, res, next) {
+    res.status(404).send("Service not available.");
+});
+
 // start the server in the port 3000 !
 app.listen(3000, function () {
     console.log('Lighthouse API listening on port 3000.');
