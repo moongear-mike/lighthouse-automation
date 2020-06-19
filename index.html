@@ -323,7 +323,7 @@
 
                 var lh_iframe_src = lh_domain + '/' + n + '/?lh_schema=' + lh_schema + '&lh_website=' + lh_website + '&lh_form_factor=' + lh_form_factor + '&lh_time=' + n;
 
-                // console.log(lh_iframe_src);
+                console.log(lh_iframe_src);
 
                 $lh('.loading').removeClass('hidden');
 
@@ -416,14 +416,14 @@
         <div class="lh_section">
             <div class="lh_throttle_method">Throttle Method:</div>
             <label for="lh_throttle_method_simulate">
-                <input id="lh_throttle_method_simulate" name="lh_throttle_method" type="radio" checked value="simulate">
+                <input id="lh_throttle_method_simulate" name="lh_throttle_method" type="radio" value="simulate">
                 Simulate </label>
             <label for="lh_throttle_method_devtools">
                 <input id="lh_throttle_method_devtools" name="lh_throttle_method" type="radio" value="devtools">
                 Devtools
             </label>
             <label for="lh_throttle_method_provided">
-                <input id="lh_throttle_method_provided" name="lh_throttle_method" type="radio" value="provided">
+                <input id="lh_throttle_method_provided" name="lh_throttle_method" type="radio" checked value="provided">
                 Provided </label>
         </div>
         <div class="lh_section">

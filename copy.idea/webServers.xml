@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="687cc0c2-5206-428a-84f1-4b014670d688" name="ubuntu node lighthouse 2cpu" url="http://34.233.119.178">
+        <fileTransfer host="34.233.119.178" port="21215" rootFolder="/lighthouse">
+          <advancedOptions>
+            <advancedOptions compatibilityMode="true" dataProtectionLevel="Private" forceListCommand="true" passiveMode="true" shareSSLContext="true" showHiddenFiles="true" />
+          </advancedOptions>
+          <option name="port" value="21215" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

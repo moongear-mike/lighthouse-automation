@@ -1,29 +1,33 @@
 {
-  "name": "lighthouse",
-  "version": "1.0.0",
+  "name": "lighthouse-test",
+  "version": "1.5.0",
   "description": "An API I created to automate Lighthouse testing.",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Michael Love",
   "license": "ISC",
   "devDependencies": {
-    "lighthouse": "^5.6.0"
+    "lighthouse": "^6.0.0"
   },
   "dependencies": {
-    "chrome-launcher": "^0.12.0",
+    "chrome-launcher": "^0.13.2",
+    "chromium": "^2.1.2",
     "cluster": "^0.7.7",
     "express": "^4.17.1",
     "find-process": "^1.4.3",
-    "fs": "0.0.2",
-    "http": "0.0.0",
+    "fs": "0.0.1-security",
+    "graceful-fs": "^4.2.4",
+    "lighthouse-batch": "^5.0.2",
+    "node-cron": "^2.0.3",
     "os": "^0.1.1",
-    "process-exists": "^3.1.0",
+    "process-exists": "^4.0.0",
     "promise": "^8.0.3",
     "ps-node": "^0.1.6",
-    "puppeteer": "^2.0.0",
+    "puppeteer": "^3.2.0",
     "querystring": "^0.2.0",
+    "serve-index": "^1.9.1",
     "url": "^0.11.0"
   },
   "repository": {

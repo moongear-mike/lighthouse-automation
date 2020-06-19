@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("graceful-fs");
 const url = require('url');
 const lighthouse = require('lighthouse');
 const chromeLauncher = require('chrome-launcher');
@@ -8,14 +8,37 @@ const util = require('util');
 const ps = require('ps-node');
 const express = require('express');
 const app = express();
+const https = require('https');
+// const http = require('http');
+const {exec} = require('child_process');
 
+const serveIndex = require('serve-index');
 const port = 3000;
+
+var cron = require('node-cron');
+
+//exceute every 1 min
+// console.log('Cron Start.....');
+// cron.schedule('*/2 * * * *', function(){
+//     exec('node app.js > cron.log');
+// });
+
+// /usr/bin/node /home/ubuntu/lighthouse/app.js
 
 // Whitelisted ip addresses
 const ip_addresses = [
     '::ffff:75.188.73.180',
     '127.0.0.1',
     '99.203.186.205',
+    '::ffff:192.168.1.50',
+    '::ffff:192.168.1.1',
+    '::ffff:99.203.65.59',
+    '::ffff:24.166.65.97',
+    '108.170.62.213',
+    '192.168.1.1',
+    '108.170.49.204',
+    '::ffff:108.170.62.213',
+    '::ffff:108.170.62.114',
 ];
 
 // Active API keys
@@ -53,6 +76,11 @@ ps.lookup({
 
 // app.use(express.urlencoded());
 
+app.use(express.static('reports'));
+
+app.use(express.static(__dirname + "/"));
+app.use('/report/lighthouse', serveIndex(__dirname + '/report/lighthouse', {'view': 'details'}));
+
 app.use(express.urlencoded({extended: true}));
 
 // This index page
@@ -66,6 +94,97 @@ app.get('/', (req, res) => {
 
 });
 
+// This index page
+app.get('/favicon.ico', (req, res) => {
+    favicon = "data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAD/0lEQVR4Xu2aj7EMQRCHfy8CRIAIEAEiQASIABEgAkSACBABIkAEiAARUF+Zrpraur2Z7pnZd7e3U3X1ql7tznR/8+vu+bNnOvF2duL+awOwKeDECWwhcOIC2JLgFgJbCCxD4KakW+l3UdL1ybBfJf2W9Cn9Pi9jlobmAJx8JOmuJJz2NGC8l/RKEnCGtRE5AMdfpNk2w3+mmcUpnONnjvE8gPgBC6VczjxGFU9GgegNAMcfZ8Yzg28CxgPlQVKQdfdS0vMEr5siegG4IuldFttvJT2T9KPRUvqln/upH1TzMAB01oweAJitj0nCSB0Z945bxiB8CA3C53avMVoB5M5/S/GLgSMaOYJ8cK0nhBYAyPNLmnkkT8wu0cgphEQXJbQAwHkUwMxP6/poEIQYSuAv4RBWXRQAiempJGIe58MGBEkRDjhPTqDS5JXH1WUEAA4z+7QbvZKRy+r/D3exIwKAjM9iZcm4n+Nj+YDkSCi4mxcAie97GuXqTJ3/O2NF7Vie93N7QmqsNcp8MuL74s7jwC5W3vdZIbLnCCnSC+BXKnv7aJsD3r7n5Fvqz3IBifiSNwY8RhL3xD+ZH+lFDfbaWAJAfyy5qQjkAfJBdfMAsNJXklqNwRjY8zkLTTZL2FndPABYi9+RdC+ty1sV0BMA+w82Yx/SXmQIAFv5uWU2Y00tgBpnLDxZHJGfqptHAWZwqNzssKgngHxR5PHJdSTWavBceZuycTmQvRyyzzNYaIAdBpbk6bEp7ytkn2ewYwgB987UA8C2oIecBDlOJyFWNw+AYyiDQwEcw0KI43P2BtXNowCrtSw72Qm2LoRqjaxJbuxQWZ67S7QHAAaz4bhQGKjG4Frnea7Un60BSnuUnWN6AdjW8xC3w6GjMS+AQz4QmTug2as2LwA6s2pQ2hV6ZB591naBYVsiAJqPoaLeTt7L1/+h2ae/CADes5JIRSDznsexOJmf43H3GUAOMgqAPvLLCdcWtIMCbGvuXvhMx24BQCgAgbJILHJru0R7na7h/qTa36S+FgA4SxxyBgeE5muqAj3kzpmkXcN1Ga8VwBQCOYEjsxHX4xx5oTpmnnHO9W5wOlkYRnnEKBohQXLq8YEEd5B280zMc/5Hs6vyJiX0UEAOw6qD/Y+VIzXaqwhkzhV4fuk5zfb59wJhCL0B4Pj0sxb+hxKYMftIChnnH0mRQ/KPpPJ7h32f2zRDGAHAZh8nmEHki4OexsYGWCioFEZNEEYCyB1G0sSufRLHh5PW7KNI+1ASx0tOT2GGISwFwDP70WdDENYEAHBuCGsD4IawRgAuCGsFMIUwu2NcMwCDQCmevTJfO4BiRdkAFBGt/IFNASuf4KJ7J6+Af1+CBFDSbROOAAAAAElFTkSuQmCC";
+    const im = favicon.split(",")[1];
+    const img = Buffer.from(im, 'base64');
+    res.writeHead(200, {
+        'Content-Type': 'image/png',
+        'Content-Length': img.length
+    });
+    res.end(img);
+});
+
+
+// This index page
+app.get('/adddomain', (req, res) => {
+
+
+    var fullurl = req.query.domain;
+    var hostname = url.parse(fullurl).hostname;
+    var filepart = hostname.replace(/\./g, '_');
+    var filename = './reports/queue/domain_' + filepart + '.txt';
+
+    try {
+        if (!fs.existsSync(filename)) {
+
+            request(fullurl, function (error, response, body) {
+                console.log(response.statusCode);
+                if (response.statusCode !== 200) {
+                    fullurl = '';
+                    console.log('Bad website.');
+                }
+            });
+
+            if (fullurl === '') {
+                return;
+            }
+
+            // Need some error checking
+            fs.writeFile(filename,fullurl, function() {
+                return true;
+            });
+            message = 'Added to Queue'
+        }
+        else {
+            message = 'Already in Queue'
+        }
+    } catch(err) {
+        message = err;
+        console.error(err)
+    }
+
+
+
+
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(message);
+    res.end();
+    console.log('Wrote index chunk.');
+
+    console.log(filename);
+    console.log(message);
+
+
+});
+
+app.get('/runqueue', (req, res) => {
+
+    var filename = './working.txt';
+
+    try {
+        if (!fs.existsSync(filename)) {
+            message = 'Starting Queue';
+            require('./app.js');
+            do_process_queue();
+
+        }
+        else {
+            message = 'Processing Queue';
+        }
+    } catch(err) {
+        message = err;
+        console.error(err)
+    }
+
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(message);
+    res.end();
+    console.log('Wrote index chunk.');
+    console.log(message);
+});
+
 app.post('/[0-9]+', (req, res) => {
 
     var writeChunk = '';
@@ -75,6 +194,8 @@ app.post('/[0-9]+', (req, res) => {
     var post_vars = req.body;
 
     post_vars = typeof post_vars === 'undefined' ? [] : post_vars;
+
+    console.log(post_vars);
 
     if (typeof post_vars['lh_api_res_type'] === 'undefined') {
         api_res_type = 'html';
@@ -93,6 +214,8 @@ app.post('/[0-9]+', (req, res) => {
         }
         var haschrome = setchromebusy(resultList.length);
     });
+
+
 
     function setchromebusy(chromevar) {
         chromeisbusy = chromevar;
@@ -115,19 +238,17 @@ app.post('/[0-9]+', (req, res) => {
                 req.socket.remoteAddress ||
                 (req.connection.socket ? req.connection.socket.remoteAddress : null);
 
+
             console.log(ip);
 
             // Was an API key provided or is the request from a whitelisted ip address?
             if (!(api_keys.indexOf(post_vars['lh_api_key']) > -1) && !(ip_addresses.indexOf(ip) > -1)) {
                 res.writeHead(200, {'Content-Type': 'text/html'});
-                res.write('Um, bad API key?  Sorry.');
+                res.write('Um, bad API key for ' + ip + '?  Sorry.');
                 res.write('<script>parent.iframe_loaded();</script>');
                 res.end();
                 console.log('Killed. No API key ot whitelist IP.');
             } else {
-
-                console.log(ip);
-                console.log(post_vars);
 
                 // Validate lighthouse options
                 // Validate lighthouse options
@@ -220,7 +341,7 @@ app.post('/[0-9]+', (req, res) => {
                             '--headless'
                         ],
                         "output": lh_option_output,
-                        logLevel: lh_option_logLevel,
+                        // logLevel: lh_option_logLevel,
                         "save-assets": true,
                         "maxWaitForLoad": lh_option_maxWaitForLoad,
                         "throttlingMethod": lh_throttle_method,
@@ -250,6 +371,7 @@ app.post('/[0-9]+', (req, res) => {
                     res.write('The domain name does not apprea to be valid.');
                     res.write('<script>parent.iframe_loaded();</script>');
                     res.end();
+                    console.log('Bad URL: ' + url );
                     console.log('Wrote chunk.');
                 } else {
 
@@ -270,6 +392,7 @@ app.post('/[0-9]+', (req, res) => {
                         res.write(writeChunk);
                         res.write('<script>parent.iframe_loaded();</script>');
                         res.end();
+                        console.log('Test Completd.');
                         console.log('Wrote chunk.');
 
                         return true;
@@ -356,12 +479,25 @@ app.post('/[0-9]+', (req, res) => {
 
 });
 
+
+
 // Change the 404 message modifing the middleware
 app.use(function (req, res, next) {
-    res.status(404).send("Service not available.");
+    console.log('Service not available right now.  404' + req.url);
+    res.status(404).send("Service not available right now.");
 });
+
+
+
+// we will pass our 'app' to 'https' server
+// http.createServer({
+//     // key: fs.readFileSync('./privkey.pem'),
+//     // cert: fs.readFileSync('./fullchain.pem'),
+//     // passphrase: 'Lumina4037'
+// }, app).listen(3000);
 
 // start the server in the port 3000 !
 app.listen(3000, function () {
     console.log('Lighthouse API listening on port 3000.');
 });
+
