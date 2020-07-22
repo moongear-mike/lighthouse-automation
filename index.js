@@ -368,7 +368,7 @@ app.post('/[0-9]+', (req, res) => {
 
                 if (!validURL(url)) {
                     res.writeHead(200, {'Content-Type': 'text/html'});
-                    res.write('The domain name does not apprea to be valid.');
+                    res.write('The domain name ' + url + ' does not appear to be valid.');
                     res.write('<script>parent.iframe_loaded();</script>');
                     res.end();
                     console.log('Bad URL: ' + url );

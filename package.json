@@ -19,7 +19,7 @@
     "find-process": "^1.4.3",
     "fs": "0.0.1-security",
     "graceful-fs": "^4.2.4",
-    "lighthouse-batch": "^5.0.2",
+    "lighthouse-batch": "^6.0.0",
     "node-cron": "^2.0.3",
     "os": "^0.1.1",
     "process-exists": "^4.0.0",

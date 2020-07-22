@@ -73,8 +73,10 @@ async function do_process_runs() {
 
                 var options = {
                     host: 'www.moongear.com',
-                    path: '/lh_report_data/lh_reports.php?filename=' + file,
+                    path: '/wp-content/plugins/moongear-lighthouse/lh_reports.php?filename=' + file,
                 };
+
+                console.log('Sent pick up request');
 
                 var req = https.get(options, function(res) {
                     console.log('STATUS: ' + res.statusCode);
