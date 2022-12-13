@@ -15,7 +15,7 @@
     "chrome-launcher": "^0.13.2",
     "chromium": "^2.1.2",
     "cluster": "^0.7.7",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "find-process": "^1.4.3",
     "fs": "0.0.1-security",
     "graceful-fs": "^4.2.4",
